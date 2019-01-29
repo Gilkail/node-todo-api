@@ -7,7 +7,7 @@ const {User} = require('./models/user')
 
 const app = express()
 
-app.use(bodyParser.json())
+app.use(bodyParser.json()) // Add json parser grabbed from body-parser package to the app usage
 
 app.post('/todos', (req, res) => {
     const todo = new Todo({
@@ -24,3 +24,5 @@ app.post('/todos', (req, res) => {
 app.listen('3000', ()=>{
     console.log('Started on port 3000')
 })
+
+module.exports = {app}
