@@ -4,9 +4,17 @@ const request = require('supertest')
 const {app} = require('../server')
 const {Todo} = require('../models/todo')
 
+const todos = [{
+    text: 'First Test Todo'
+},{
+    text: 'Second Test Todo'
+}]
+
 // Remove all todos before each test case
 beforeEach((done)=>{
-    Todo.deleteMany({}).then(()=> done() )
+    Todo.deleteMany({}).then(()=> {
+        return Todo.insertMany(todos)
+    }).then(()=> done())
 })
 
 
@@ -27,7 +35,7 @@ describe('POST /todos', ()=>{
                     return done(err)
                 }
                 
-                Todo.find().then((todos)=>{ // If no errors check the todos collection by check the Todo model on the DB and return the todos list
+                Todo.find({text}).then((todos)=>{ // If no errors check the todos collection by check the Todo model on the DB and return the todos list
                     expect(todos.length).toBe(1) // Check if one todo in the DB
                     expect(todos[0].text).toBe(text) // Check if the first document text equal text
                     done() /// End operation
@@ -46,9 +54,21 @@ describe('POST /todos', ()=>{
                 }
 
                 Todo.find().then((todos)=>{
-                    expect(todos.length).toBe(0)
+                    expect(todos.length).toBe(2)
                     done()
                 }).catch((e) => done(e))
             })
+    })
+})
+
+describe('GET /todos route', ()=>{
+    it('Should get all todos', (done)=>{
+        request(app)
+            .get('/todos')
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todos.length).toBe(2)
+            })
+            .end(done)
     })
 })
