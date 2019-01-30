@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express')
 const bodyParser = require('body-parser')
 
@@ -62,6 +63,34 @@ app.delete('/todos/:id', (req, res)=>{
         res.send({todo})
 
     }, (e)=>{
+        res.sendStatus(400)
+    })
+})
+
+app.patch('/todos/:id', (req, res)=>{
+    const id = req.params.id
+    const body = _.pick(req.body, ['text', 'completed'])
+    
+    if(!ObjectID.isValid(id)){
+        return res.sendStatus(400)
+    }
+
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt = new Date().getTime()
+    }else{
+        body.completed = false
+        body.completedAt = null
+    }
+
+    Todo.findOneAndUpdate(id, {$set: body}, {new: true}).then((todo)=>{
+        
+        if(!todo){
+            return res.sendStatus(404)
+        }
+
+        res.send({todo})
+
+    }).catch((e)=>{
         res.sendStatus(400)
     })
 })
