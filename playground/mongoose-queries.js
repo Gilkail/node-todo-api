@@ -9,31 +9,31 @@ const {User} = require('../server/models/user')
 //     return console.log('Id not valid')
 // }
 
-// // Query many docments by model name -> returns as array
-// Todo.find({_id: id}).then((todos)=>{
-//     if(todos.length === 0){
-//         return console.log('Id not found')
-//     }
-//     console.log('Todos :', todos)
-// })
+// Query many docments by model name -> returns as array
+Todo.find({_id: id}).then((todos)=>{
+    if(todos.length === 0){
+        return console.log('Id not found')
+    }
+    console.log('Todos :', todos)
+})
 
-// // Query only one document -> returns as object
-// Todo.findOne({_id: id}).then((todo)=>{
-//     if(!todo){
-//         return console.log('Id not found')
-//     }
-//     console.log('Todo: ', todo)
-// })
+// Query only one document -> returns as object
+Todo.findOne({_id: id}).then((todo)=>{
+    if(!todo){
+        return console.log('Id not found')
+    }
+    console.log('Todo: ', todo)
+})
 
-// Searching document by ID -> returns as object
-// Todo.findById(id).then((todo)=>{
-//     if(!todo){
-//         return console.log('Id not found')
-//     }
-//     console.log('Todo by ID: ', todo)
-// }).catch((e)=>{
-//     console.log(e)
-// })
+// Searching document by ID -> returns as oject
+Todo.findById(id).then((todo)=>{
+    if(!todo){
+        return console.log('Id not found')
+    }
+    console.log('Todo by ID: ', todo)
+}).catch((e)=>{
+    console.log(e)
+})
 
 const userId = '5c504f8ef321228ed092ff6b'
 
