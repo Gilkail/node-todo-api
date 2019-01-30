@@ -1,13 +1,15 @@
 const expect = require('expect')
 const request = require('supertest')
-
+const {ObjectID} = require('mongodb')
 const {app} = require('../server')
 const {Todo} = require('../models/todo')
 
 const todos = [{
-    text: 'First Test Todo'
+    text: 'First Test Todo',
+    _id: new ObjectID()
 },{
-    text: 'Second Test Todo'
+    text: 'Second Test Todo',
+    _id: new ObjectID()
 }]
 
 // Remove all todos before each test case
@@ -69,6 +71,33 @@ describe('GET /todos route', ()=>{
             .expect((res)=>{
                 expect(res.body.todos.length).toBe(2)
             })
+            .end(done)
+    })
+})
+
+describe('GET /todos/:id route', ()=>{
+    it('Should get todo doc', (done)=>{
+        request(app)
+            .get(`/todos/${todos[0]._id.toHexString()}`)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todo.text).toBe(todos[0].text)
+            })
+            .end(done)
+    })
+
+    it('Should return 400 if todo not found', (done)=>{
+        const id = new ObjectID().toHexString()
+        request(app)
+            .get(`/todos/${id}`)
+            .expect(404)
+            .end(done)
+    })
+
+    it('Should return 404 if id invalid', (done)=>{
+        request(app)
+            .get(`/todos/123`)
+            .expect(400)
             .end(done)
     })
 })
