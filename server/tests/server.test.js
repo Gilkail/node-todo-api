@@ -138,3 +138,52 @@ describe('DELETE /todos/:id route', ()=>{
             .end(done)
     })
 })
+
+
+describe('PATCH /todos/:id route', ()=>{
+
+    it('Should get todo doc', (done)=>{
+        const hexID = todos[0]._id.toHexString()
+        const docUpdate = {
+            text: 'Update',
+            completed: true
+        }
+
+        request(app)
+            .patch(`/todos/${hexID}`)
+            .send(docUpdate)
+            .expect(200)
+            .expect((res)=>{
+                expect(res.body.todo.text).toBe(docUpdate.text)
+                expect(res.body.todo.completed).toBe(docUpdate.completed)
+                expect(res.body.todo.completedAt).toBeA('number')
+            })
+            .end((err, res)=>{
+                if(err) {
+                    return done(err)
+                }
+
+                Todo.findById(hexID).then((todo)=>{
+                    expect(todo.text).toEqual(docUpdate.text)
+                    expect(todo.completed).toEqual(docUpdate.completed)
+                    done()
+                }).catch((e) => done(e))
+            })
+    })
+
+    it('Should return 400 if todo not found', (done)=>{
+        const id = new ObjectID().toHexString()
+
+        request(app)
+            .patch(`/todos/${id}`)
+            .expect(404)
+            .end(done)
+    })
+
+    it('Should return 400 if id invalid', (done)=>{
+        request(app)
+            .patch(`/todos/123`)
+            .expect(400)
+            .end(done)
+    })
+})
