@@ -12,6 +12,7 @@ const authenticate = (req, res, next) => {
         res.user = user
         res.token = token
         next()
+        
     }).catch((e)=>{
         res.sendStatus(401)
     })
