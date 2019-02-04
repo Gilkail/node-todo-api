@@ -2,6 +2,7 @@ require('./config/config')
 const _ = require('lodash')
 const express = require('express')
 const bodyParser = require('body-parser')
+const bcrypt = require('bcryptjs')
 
 const {ObjectID} = require('mongodb')
 const {mongoose} = require('./db/mongoose')
@@ -116,6 +117,18 @@ app.post('/users', (req, res)=>{
 
 app.get('/users/me', authenticate, (req, res)=>{
     res.send(res.user)
+})
+
+app.post('/users/login', (req,res)=>{
+    const body = _.pick(req.body, ['email', 'password'])
+
+    User.findByCredentials(body.email, body.password).then((user)=>{
+        return user.generateAuthToken().then((token)=>{
+            res.header('x-auth', token).send(user)
+        })
+    }).catch((e)=>{
+        res.sendStatus(401)
+    })
 })
 
 app.listen(port, ()=>{
